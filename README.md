@@ -1,32 +1,4 @@
-## Dependence
-imutils
-
-`sudo pip install imutils`
-
-python-opencv
-
-`sudo pip install python-opencv`
-
-scikit-learn
-
-`sudo pip install scikit-learn`
-
-scikit-image
-
-`sudo pip install scikit-image`
-
-## Install
-
-```
-git clone git@github.com:BUPTLdy/human-detector.git
-cd human-detector/object_detector
-python python detector.py
-```
-## Detail in Chinese
-
-[Human Detection using HOG-Linear SVM in Python](http://buptldy.github.io/2016/04/01/2016-04-01-Human%20Detection/)
-
-## Result
+Result
 
 Before NMS：
 
