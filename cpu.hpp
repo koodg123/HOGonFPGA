@@ -18,7 +18,7 @@
 // ==================
 // = FPGA Algorithm =
 // ==================
-#include "hog_feature.hpp"  // top-level FPGA module
+#include "hog.hpp"  // top-level FPGA module
 
 // ===========================================
 // = CPU-Side Functions for SqueezeNetOnFPGA =

@@ -1,4 +1,4 @@
-#include "cpu_top.hpp"
+#include "cpu.hpp"
 
 // ======================================
 // = Global Variables (Memory Pointers) =
@@ -18,11 +18,22 @@ data_t *input_image = (data_t *)malloc(win * hin * sizeof(data_t));
 load_prepared_input_image(input_image, "input.bin", win, hin);
 // Copy onto FPGA
 copy_input_image_to_FPGA(input_image);
+
+printf("Entering FPGA \n");
+fflush(stdout);
+// Offload Layer Calculation to FPGA
+
+hog((data_t *)SHARED_DRAM, input_offset);
+//TODO Add size here
+int result_size = 0;
+data_t *results = (data_t *)malloc(result_size);
+copy_results_from_FPGA(results);
 return 0;
 }
 
 void copy_input_image_to_FPGA(data_t *image) {
-  // Input Data goes into Layer 0:
+ //TODO Fill size here
+  // Input Data 
   int win =
   int hin = 
   int input_img_size = win * hin * sizeof(data_t);
@@ -49,10 +60,9 @@ void load_prepared_input_image(data_t *input_image, const char *filename,int win
   fclose(infile);
 }
 void copy_results_from_FPGA(data_t *results) {
-
-  int result_offset = 0;
-  //TODO Fill size here
-//   int result_size = ;
+//TODO Fill size here
+int result_offset = 0;
+int result_size = 0;
 
   printf("CPU: Copy Results from FPGA DRAM: %d Bytes\n", result_size);
 

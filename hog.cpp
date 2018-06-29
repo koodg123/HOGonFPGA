@@ -1,5 +1,5 @@
 
-#include "hog_feature.hpp"
+#include "hog.hpp"
 
 
 void hog(data_t *SHARED_DRAM, unsigned int input_offset)
@@ -27,7 +27,10 @@ writeback();
 void load_image(data_t *SHARED_DRAM)
 {
 int pixel_offset=0;
+//Load Row Here
 #pragma HLS inline
+#pragma HLS RESOURCE variable = IBRAM core = RAM_S2P_BRAM
+
 for (coordinate_t x = 0; x < width_in; x++) {
 #pragma HLS LOOP_TRIPCOUNT min = 4 max = 32 
  data_t pixel_from_ram = reg(SHARED_DRAM[pixel_offset])
@@ -39,6 +42,7 @@ void secondstage()
 //Compute Gradients for the Image
 
 
+#pragma HLS RESOURCE variable = GRAD core = RAM_S2P_BRAM
 
 }
 
@@ -46,7 +50,7 @@ void thirdstage()
 {
 //Normalisation Procedure
 
-
+#pragma HLS RESOURCE variable = ORIENTATIONS core = RAM_S2P_BRAM
 }
 
 void fourthstage()
