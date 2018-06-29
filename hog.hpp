@@ -18,10 +18,7 @@
 const int NUM_IMG_CACHE_LINES = 4;
 // Number of Processing Elements
 const int N_PE = 8;
-size_t blocksize; size_t cellsize; size_t stride; size_t grad_type; size_t binning;
-size_t bin_width; size_t n_cells_per_block_y = blocksize/_cellsize;
-size_t n_cells_per_block_x = n_cells_per_block_y; size_t n_cells_per_block = n_cells_per_block_y*_n_cells_per_block_x;
-size_t block_hist_size = binning*_n_cells_per_block; size_t stride_unit = stride/cellsize;
+
 // ====================
 // = Type Definitions =
 // ====================
