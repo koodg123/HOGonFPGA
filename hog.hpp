@@ -25,5 +25,7 @@ const int N_PE = 8;
 typedef ap_uint<2> cacheline_t;  // cache height = 3 or 4 lines
 
 
+void hog(data_t *SHARED_DRAM, unsigned int input_offset);
+void load_image(data_t *SHARED_DRAM);
 
 
