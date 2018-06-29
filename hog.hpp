@@ -26,10 +26,7 @@ size_t block_hist_size = binning*_n_cells_per_block; size_t stride_unit = stride
 // = Type Definitions =
 // ====================
 typedef ap_uint<2> cacheline_t;  // cache height = 3 or 4 lines
-typedef ap_uint<NBITS(MAX_INPUT_PER_LAYER)> imgdramoffset_t;
-typedef ap_uint<NBITS(MAX_IMAGE_CACHE_SIZE)> imgcacheaddr_t;
-typedef ap_uint<NBITS(MAX_IMAGE_CACHE_SIZE / 4)> pixelperrow_t;
-typedef ap_int<NBITS(MAX_DIMENSION) + 2> coordinate_t;
+
 
 
 
