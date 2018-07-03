@@ -5,44 +5,38 @@
 // ======================================
 // Pointers to Shared DRAM Memory
 data_t *SHARED_DRAM;
-data_t *SHARED_DRAM_DATA;
+
 
 int main()
 {
+
+int result_size = n_blocks_col*n_blocks_row*b_col*b_row*orient;
+int image_size=s_row*s_col;
+int total_size=image_size+result_size;
 SHARED_DRAM = (data_t *)malloc(total_size);
-SHARED_DRAM_DATA = (data_t *)(SHARED_DRAM);
-copy_config_to_FPGA();
+int win =s_row;
+int hin = s_col;
 printf("CPU: FPGA DRAM Memory Allocation:\n");
 printf("     region: %lu – %lu\n", (long)SHARED_DRAM, (long)(SHARED_DRAM + total_size));
 data_t *input_image = (data_t *)malloc(win * hin * sizeof(data_t));
 load_prepared_input_image(input_image, "input.bin", win, hin);
-// Copy onto FPGA
 copy_input_image_to_FPGA(input_image);
-
 printf("Entering FPGA \n");
 fflush(stdout);
-// Offload Layer Calculation to FPGA
-
-hog((data_t *)SHARED_DRAM, input_offset);
-//TODO Add size here
-int result_size = 0;
+hog((data_t *)SHARED_DRAM, 0);
 data_t *results = (data_t *)malloc(result_size);
 copy_results_from_FPGA(results);
 return 0;
 }
 
 void copy_input_image_to_FPGA(data_t *image) {
- //TODO Fill size here
-  // Input Data 
-  int win =
-  int hin = 
+  int win =s_row;
+  int hin = s_col;
   int input_img_size = win * hin * sizeof(data_t);
-
-  // Info:
+// Info:
   printf("CPU: Copy Input Data: %dKB (input image)\n", input_img_size / 1024);
-
   // Copy Input Data:
-  memcpy(SHARED_DRAM_DATA, image, input_img_size);
+  memcpy(SHARED_DRAM, image, input_img_size);
 }
 
 void load_prepared_input_image(data_t *input_image, const char *filename,int win, int hin) {
@@ -62,10 +56,8 @@ void load_prepared_input_image(data_t *input_image, const char *filename,int win
 void copy_results_from_FPGA(data_t *results) {
 //TODO Fill size here
 int result_offset = 0;
-int result_size = 0;
-
+int result_size = n_blocks_col*n_blocks_row*b_col*b_row*orient;
   printf("CPU: Copy Results from FPGA DRAM: %d Bytes\n", result_size);
-
-  // Copy Result Data:
-  memcpy(results, SHARED_DRAM_DATA + result_offset, result_size);
+  memcpy(results, SHARED_DRAM + result_offset, result_size);
 }
+
