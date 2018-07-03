@@ -1,8 +1,9 @@
 
 #include "hog.hpp"
 extern const var_t s_row, s_col,c_row, c_col,b_row, b_col,n_cells_row,n_cells_col, orient,n_blocks_row,n_blocks_col;
-extern data_t IBRAM[s_row][s_col], GRAD[s_row][s_col], ORIENTATIONS[n_cells_row][n_cells_col][orient];
-extern data_t NORM_BLOCKS[n_blocks_row][n_blocks_col][b_row][b_col][orient];
+extern data_t IBRAM[s_row][s_col], GRAD[s_row][s_col];
+extern data_t orientation_histogram[n_cells_row][n_cells_col][orient],magnitude[][],orientation[][];
+extern data_t norm_block[n_blocks_row][n_blocks_col][b_row][b_col][orient];
 extern cacheline_t curr_img_cache_line;
 extern imgcacheaddr_t curr_img_cache_addr;
 extern imgcacheaddr_t line_width;
@@ -69,8 +70,8 @@ n=180/orient;
 r_0 = cell_rows / 2 ;
 c_0 = cell_columns / 2; 
 #pragma HLS RESOURCE variable = ORIENTATIONS core = RAM_S2P_BRAM latency=2
-cc = cell_rows * number_of_cells_rows;
-cr = cell_columns * number_of_cells_columns;
+cc = c_row * n_cells_row;
+cr = c_col * n_cells_col;
 for(i=0;i<orient;i++)
     {
     start=n*i;
@@ -81,21 +82,41 @@ for(i=0;i<orient;i++)
                 c = c_0
                 while c < cr:
                    {
-                    orientation_histogram[r_i, c_i, i] = cell_hog(r,c)
+                    orientation_histogram[r_i, c_i, i] = cell_hog(r,c,start,end)
                     c_i += 1
-                    c += cell_columns
+                    c += c_col
                    }
                 r_i += 1
-                r += cell_rows
+                r += c_row
             }      
     }
 }
-void cell_hog(r,c)
+void compute_magnitude()
+{
+magnitude = np.hypot(gradient_columns, gradient_rows)
+orientation = np.rad2deg(np.arctan2(gradient_rows, gradient_columns)) % 180
+}
+
+void cell_hog(r,c,start,end)
 {
 #pragma HLS inline
+data_t total=0;
+for (int i=-c_row/2; i<c_row/2; i++)
+    {
+    cri = r + i;
+    if (cri < 0 or cri >= s_row):
+        continue
 
-
-
+    for (int j=-c_col/2; j<c_col/2; j++)
+        {
+        cci = c + j;
+        if (cci < 0 or cci >= s_col or orientation[cri][cci]>= end or 
+        orientation[cri][cci]< start)
+        continue
+        total += magnitude[cri, cci];
+        }
+    } 
+return total / (c_row * c_col)
 }            
 void fourthstage()
 {
