@@ -64,23 +64,63 @@ for(int i=0; i<s_row;i++)
 
 void thirdstage()
 {
+int i,j,k,r,c,n;
+n=180/orient;
+r_0 = cell_rows / 2 ;
+c_0 = cell_columns / 2; 
 #pragma HLS RESOURCE variable = ORIENTATIONS core = RAM_S2P_BRAM latency=2
-
-
+cc = cell_rows * number_of_cells_rows;
+cr = cell_columns * number_of_cells_columns;
+for(i=0;i<orient;i++)
+    {
+    start=n*i;
+    end=start+n;
+    c = c_0;r = r_0;r_i = 0;c_i = 0;
+    while (r < cc):
+            {    c_i = 0
+                c = c_0
+                while c < cr:
+                   {
+                    orientation_histogram[r_i, c_i, i] = cell_hog(r,c)
+                    c_i += 1
+                    c += cell_columns
+                   }
+                r_i += 1
+                r += cell_rows
+            }      
+    }
 }
+void cell_hog(r,c)
+{
+#pragma HLS inline
 
+
+
+}            
 void fourthstage()
 {
+int i,j,k;
 #pragma HLS RESOURCE variable = NORM_BLOCKS core = RAM_S2P_BRAM latency=2
-for r in range(n_blocks_row):
-    for c in range(n_blocks_col):
-        block = orientation_histogram[r:r + b_row, c:c + b_col, :]
-        normalized_blocks[r, c, :] = block / (np.sum(np.abs(block)) + eps) #eps=1e-5
 for(int r=0;r<n_blocks_row;r++)
     for(int c=0;c<n_blocks_col;c++)
-       block=getblock(r,c);
-       norm=sumblock(r,c);
-       normalized_blocks=block/norm;
+        {
+            sum=0;
+          for ( i =0;i<b_row;i++)
+            for( j=0;j<b_col;j++)
+                for( k=0;k<orient;k++)
+                   { block[i][j][k]=orientation_histogram[i+r][j+c][k]; 
+                    if(orientation_histogram[i+r][j+c][k]>0)
+                        sum +=orientation_histogram[i+r][j+c][k];
+                    else
+                        sum-=orientation_histogram[i+r][j+c][k];
+                   }   
+            sum+=0.00001;
+        for (i =0;i<b_row;i++)
+            for( j=0;j<b_col;j++)
+                for(k=0;k<orient;k++)
+                {   normalized_blocks[r][c][i][j][k]=block[i][j][k]/sum;
+                }          
+        }      
 }
 void writetoDRAM()
 {
@@ -88,3 +128,5 @@ int result_offset = 0;
 int result_size = sizeof(data_t)*n_blocks_row*n_blocks_col*b_row*b_col*orient;    
     
 }
+
+
